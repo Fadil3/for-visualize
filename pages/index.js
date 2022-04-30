@@ -20,6 +20,8 @@ int main() {
   const [errorMessage, setErrorMessage] = useState('')
 
   function preprocess() {
+    setError(false)
+    setErrorMessage('')
     let code = editor.split('\n')
 
     // trim spaces
