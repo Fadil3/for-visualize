@@ -18,6 +18,8 @@ int main() {
   const [editor, setEditor] = useState(defaultValue)
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isChange, setIsChange] = useState(false)
+  const [isSubmit, setIsSubmit] = useState(false)
 
   function preprocess() {
     setError(false)
@@ -43,6 +45,8 @@ int main() {
 
     // remove empty lines
     code = code.filter((line) => line.length > 0)
+
+    // getForAttribute(code)
 
     console.log(code)
     console.log(error)
@@ -89,7 +93,7 @@ int main() {
 
   function checkSemicolon(code) {
     code.forEach((line) => {
-      console.log(line)
+      // console.log(line)
       if (line.endsWith(')')) {
         //check if next line has a curly braces
         if (code[code.indexOf(line) + 1] !== '{') {
@@ -98,6 +102,35 @@ int main() {
         }
       }
     })
+  }
+
+  function getForAttribute(code) {
+    let forAttribute = ''
+    code.forEach((line) => {
+      if (line.startsWith('for')) {
+        forAttribute = line
+      }
+    })
+
+    // split for attribute
+    let forAttributeArray = forAttribute.split(';')
+    console.log(forAttributeArray)
+
+    // get value after = sign
+    let initialValue = forAttributeArray[0].split('=')[1]
+    console.log(initialValue)
+
+    // check if include < , > , <= , >=
+    let condition = forAttributeArray[1].includes('<')
+
+    // get increment value
+    let incrementValue = forAttributeArray[2].split(';')[0].includes('++')
+
+    // console.log(initialValue)
+    console.log(condition)
+    console.log(boundaryValue)
+    console.log(incrementValue)
+    return forAttribute
   }
 
   return (
@@ -114,17 +147,45 @@ int main() {
               className="mx-auto "
               onChange={(editor, viewUpdate) => {
                 setEditor(editor)
+                setIsChange(true)
+                setIsSubmit(false)
               }}
             />
           </div>
           <div className="w-[550px] h-[500px] border mx-auto"></div>
         </div>
-        <button
-          onClick={() => console.log(preprocess())}
-          className="mt-1 mb-5 px-5 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-blue-500 text-center animate-pulse text-white w-auto font-semibold text-lg active:scale-95 transition-transform transform"
-        >
-          Visualisasikan !
-        </button>
+        <div className="flex gap-5">
+          <button
+            onClick={() => {
+              preprocess()
+              setIsSubmit(true)
+            }}
+            className={
+              isSubmit
+                ? ' mt-1 mb-5 px-5 py-2 rounded-md text-white bg-gray-300 focus:outline-none'
+                : 'mt-1 mb-5 px-5 py-2 rounded-md bg-gradient-to-r from-cyan-500 to-blue-500 text-center animate-pulse text-white w-auto font-semibold text-lg active:scale-95 transition-transform transform'
+            }
+            disabled={isSubmit}
+          >
+            Visualisasikan !
+          </button>
+          {/* reset */}
+          <button
+            onClick={() => {
+              setEditor(defaultValue)
+              setIsChange(false)
+              setIsSubmit(false)
+              setErrorMessage('')
+            }}
+            className="mt-1 mb-5 px-5 py-2 rounded-md bg-gradient-to-r from-red-400 to-rose-500 text-center  text-white w-auto font-semibold text-lg active:scale-95 transition-transform transform"
+          >
+            Reset
+          </button>
+          {/* error */}
+          {error && (
+            <div className="text-red-500 text-center">{errorMessage}</div>
+          )}
+        </div>
       </div>
     </>
   )
